@@ -1,0 +1,188 @@
+
+<html>
+    <div id="image">
+    <select onselect="change()" id="center">
+        <option>English</option>
+        <option>Spanish</option>
+        <option>Korea</option>
+        <option>Japanese</option>
+        <option>chinese</option>
+        <option>Arabic</option>
+        <option>Hindi</option>
+        <option>French</option>
+        <option>Germany</option>
+    </select>
+    <button onclick="change()">Translate</button>
+    
+    <div id="outerbox">
+        <div id="speech">
+            <p>Click on the below button and speak something...</p>
+            <p><button type="button" onclick="runSpeechRecognition()">Speech to Text</button> &nbsp; <span id="action"></span></p>
+            <div id="output" class="hide"></div>
+            <div></div>
+           <input placeholder="Enter text here"id="box1"></input>
+           <div id="box2"></div>
+    </div>
+   </div>
+
+   
+
+    <style>
+        #speech{
+            margin-left:10%;
+        }
+        
+        body{
+            background-color: lightpink;
+        }
+        button{
+            background-color:lightsalmon
+        }
+        #image{
+            height:100%;
+            width:100%;
+            background-color:lightpink
+            
+        }
+        
+        input{
+            border:none;
+            box-shadow: 2px 2px 2px 2px lightslategray;
+        }
+        select{
+            height:50px;
+            border:none;
+            font-family:cursive;
+            width:100px;
+            box-shadow: 2px 2px 2px 2px lightslategray;
+        }
+         button{
+             height:50px;
+             border:none;
+             font-family:cursive;
+             width:100px;
+             box-shadow: 2px 2px 2px 2px lightslategray;
+         }
+        #center{
+            margin-left:40%;
+            margin-top:1%;
+        }
+        #outerbox{
+            height:50%;
+            width:50%;
+            
+            margin-left:20%;
+            margin-top:10%;
+        }
+        #box1{
+            height:100%;
+            width:45%;
+            
+            float:left;
+            text-align: start;
+            font-family:cursive;
+            border-radius: 25px;
+            box-shadow: 2px 2px 2px 2px lightslategray;
+            margin-bottom:20%;
+        }
+        #box2{
+            height:100%;
+            width:45%;
+            float:right;
+            background-color:white;
+            text-align:center;
+            font-family:cursive;
+            border-radius: 25px;
+            box-shadow: 2px 2px 2px 2px lightslategray;
+            margin-bottom:20%;
+        }
+    </style>
+
+    <script>
+      async  function change(){
+         var lan=(document.getElementById('center').value);
+         var con=document.getElementById('box1').value;
+         if(lan=="English"){
+             lan="en";
+         }
+         else if(lan=="Spanish"){
+             lan="es";
+         }
+         else if(lan=="Korea"){
+             lan="ko";
+         }
+         else if(lan=="chinese"){
+             lan="zh";
+         }
+         else if(lan=="Japanese"){
+             lan="ja";
+         }
+         else if(lan=="Arabic"){
+             lan="ar";
+         }
+         else if(lan=="Hindi"){
+             lan="hi";
+         }
+         else if(lan=="French"){
+             lan="fr";
+         }
+         else if(lan=="Germany"){
+             lan="de";
+         }
+         console.log(lan);
+         const res=await fetch("https://libretranslate.de/translate",{
+             method:"POST",
+             body:JSON.stringify({
+                 q:con,
+                 source:"auto",
+                 target:lan
+             }),
+             headers:{"Content-Type":"application/json"}
+         })
+         const data=await res.json();
+         console.log(data.translatedText);
+         if(data.translatedText!=undefined){
+         document.getElementById('box2').innerHTML=data.translatedText;}
+    
+    }
+
+
+    function runSpeechRecognition() {
+		        // get output div reference
+		        var output = document.getElementById("output");
+		        // get action element reference
+		        var action = document.getElementById("action");
+                // new speech recognition object
+                var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
+                var recognition = new SpeechRecognition();
+            
+                // This runs when the speech recognition service starts
+                recognition.onstart = function() {
+                    action.innerHTML = "<small>listening, please speak...</small>";
+                };
+                
+                recognition.onspeechend = function() {
+                    action.innerHTML = "<small>stopped listening, hope you are done...</small>";
+                    recognition.stop();
+                }
+              
+                // This runs when the speech recognition service returns result
+                recognition.onresult = function(event) {
+                    var transcript = event.results[0][0].transcript;
+                    var confidence = event.results[0][0].confidence;
+                    //output.innerHTML = "<b>Text:</b> " + transcript + "<br/> <b>Confidence:</b> " + confidence*100+"%";
+                    output.classList.remove("hide");
+                    console.log(transcript);
+                    var con=document.getElementById('box1');
+         con.value=transcript;
+                };
+              
+                 // start recognition
+                 recognition.start();
+
+                 
+        
+         change();
+	        }
+    </script>
+</html>
